@@ -9,8 +9,8 @@ from Daily_Defect_Report import Daily_Defect_Report
 class CAP_DailyDefectReport():
     """docstring for CAP_DailyDefectReport"""   
     def run(self):
-        # report = Daily_Defect_Report()
-        # report.report()
+        report = Daily_Defect_Report()
+        report.report()
         htmlMsg = self.genMailHtml()
         self.sendMail(htmlMsg)
 
@@ -63,8 +63,8 @@ class CAP_DailyDefectReport():
 
     def sendMail(self, message):
         title = "Open Defect"
-        # to=['jiu.chen@thomsonreuters.com', 'zhe.wang@thomsonreuters.com', 'shan.liu@thomsonreuters.com']
-        to=['jiu.chen@thomsonreuters.com']
+        to=['jiu.chen@thomsonreuters.com', 'zhe.wang@thomsonreuters.com', 'shan.liu@thomsonreuters.com']
+        # to=['jiu.chen@thomsonreuters.com']
         send_mail('hongfeng.yao@thomsonreuters.com',to, title, message)
 
 
