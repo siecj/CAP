@@ -30,7 +30,7 @@ class Daily_Defect_Report():
 			if moreinfo.text=="True":
 				newid=nodes[0].getchildren()[1].text
 			
-				result=result+"\n"+Get_TT_Defects(FieldList,IssueID,SiblingName,ComponentList,type,dtStartDate,dtEndDate,DateType,newid)
+				result=result+"\n"+self.Get_TT_Defects(FieldList,IssueID,SiblingName,ComponentList,type,dtStartDate,dtEndDate,DateType,newid)
 		result=result.replace("<TT_Msg><Request_Info><Request_Type>XML</Request_Type><Result><NewDataSet>","")
 		result=result.replace("</NewDataSet></Result><Msg></Msg></Request_Info></TT_Msg>","")
 		return result
@@ -110,9 +110,9 @@ class Daily_Defect_Report():
 		scw_file=path+"SCW.xml"
 	
 		#Lists of defects/enhancements for each products
-		(cva_defects,cva_enhancements)=Split_Defects_Enhancement(cva_file)
+		(cva_defects,cva_enhancements)=self.Split_Defects_Enhancement(cva_file)
 	
-		(cvg_defects,cvg_enhancements)=Split_Defects_Enhancement(cvg_file)
+		(cvg_defects,cvg_enhancements)=self.Split_Defects_Enhancement(cvg_file)
 	
 		va_che=self.Filter_All_Open(va_che_file)
 	
@@ -169,7 +169,7 @@ class Daily_Defect_Report():
 	
 		va_CORE_ENHAN_output="CVA Core Open Enhancements (Total "+str(len(CVA_CORE_ENHAN))+").csv"
 	
-		self.Write_CSV_File(cva_CORE_ENHAN_output,path,CVA_CORE_ENHAN)
+		self.Write_CSV_File(va_CORE_ENHAN_output,path,CVA_CORE_ENHAN)
 	
 		cva_VENUE_ENHAN_output="CVA Venue Open Enhancements (Total "+str(len(CVA_VENUE_ENHAN))+").csv"
 	
