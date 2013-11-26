@@ -16,7 +16,9 @@ import time
 import storage
 
 #get date n_days before or after oneday
-def get_date_with_offset(n_days,in_date=str(datetime.date.today())[:10]):
+def get_date_with_offset(n_days,in_date=None):
+    if in_date is None:
+        in_date = str(datetime.date.today())[:10]
     begin_date = in_date.split("-")
     begin_date = [int(num) for num in begin_date]
     return str(datetime.datetime(begin_date[0],begin_date[1],begin_date[2]) + datetime.timedelta(days=n_days))[:10]
