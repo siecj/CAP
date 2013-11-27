@@ -91,7 +91,7 @@ class Daily_Defect_Report():
 		output=open(name,'wb')
 		writer=csv.writer(output)
 	
-		header=["Issue Number","Summary","Component","Submitter","Developer","Ower","State","Severity","Business Priority","Submit Date"]
+		header=["Issue Number","Summary","Component","Submitter","Developer","Owner","State","Severity","Business Priority","Submit Date"]
 	
 		print "Start writing " + name
 		writer.writerow(header)
@@ -150,11 +150,11 @@ class Daily_Defect_Report():
 	
 		self.Write_CSV_File(cva_APAC_output,path,CVA_APAC)
 	
-		cva_CORE_output="04 CVA Venue Open Defects CVA CORE (Total "+str(len(CVA_CORE))+").csv"
+		cva_CORE_output="04 CVA Open Defects CVA CORE (Total "+str(len(CVA_CORE))+").csv"
 	
 		self.Write_CSV_File(cva_CORE_output,path,CVA_CORE)
 	
-		cva_VENUE_COMMON_output="05 CVA Venue Open Defects VENUE COMMON (Total "+str(len(CVA_VENUE_COMMON))+").csv"
+		cva_VENUE_COMMON_output="05 CVA Open Defects VENUE COMMON (Total "+str(len(CVA_VENUE_COMMON))+").csv"
 	
 		self.Write_CSV_File(cva_VENUE_COMMON_output,path,CVA_VENUE_COMMON)
 	
