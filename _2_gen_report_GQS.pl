@@ -120,7 +120,7 @@ foreach my $id(sort keys(%g_mapValues))
 }
 
 $htm .= "\n\n</TABLE>\n";
-$htm .= "<BR>Link to graph showing ticket breakdown by month can be found <a href='http://portal.emea.ime.reuters.com/sites/gqs-dev-net/taps/Projects/Helpdesk/Periodic%20Reports/CCS%20ticket%20monthly%20graph.xls'>HERE</a><BR>";
+$htm .= "<BR>Link to old report can be found <a href='https://thehub.thomsonreuters.com/groups/cct-4th-level-support-4ls/projects/weekly-report-for-supporting-issues'>HERE</a><BR>";
 $htm .= <<"SORT_SCRIPT";
 <script type="text/javascript">
  
