@@ -5,6 +5,7 @@ import re
 import csv
 
 import os
+import unittest
 
 class Daily_Defect_Report():
 
@@ -90,7 +91,7 @@ class Daily_Defect_Report():
 		output=open(name,'wb')
 		writer=csv.writer(output)
 	
-		header=["Issue Nmber","Summary","Component","Submitter","Developer","Ower","State","Severity","Business Priority","Submit Date"]
+		header=["Issue Number","Summary","Component","Submitter","Developer","Ower","State","Severity","Business Priority","Submit Date"]
 	
 		print "Start writing " + name
 		writer.writerow(header)
@@ -137,23 +138,23 @@ class Daily_Defect_Report():
 			elif re.match("Venue_Common",d['COMPONENT_SR']):
 				CVA_VENUE_COMMON.append(d)
 	
-		cva_AMER_output="CVA Venue Open Defects Region AMER (Total "+str(len(CVA_AMER))+").csv"
+		cva_AMER_output="01 CVA Venue Open Defects Region AMER (Total "+str(len(CVA_AMER))+").csv"
 	
 		self.Write_CSV_File(cva_AMER_output,path,CVA_AMER)
 	
-		cva_EMEA_output="CVA Venue Open Defects Region EMEA (Total "+str(len(CVA_EMEA))+").csv"
+		cva_EMEA_output="02 CVA Venue Open Defects Region EMEA (Total "+str(len(CVA_EMEA))+").csv"
 	
 		self.Write_CSV_File(cva_EMEA_output,path,CVA_EMEA)
 	
-		cva_APAC_output="CVA Venue Open Defects Region APAC (Total "+str(len(CVA_APAC))+").csv"
+		cva_APAC_output="03 CVA Venue Open Defects Region APAC (Total "+str(len(CVA_APAC))+").csv"
 	
 		self.Write_CSV_File(cva_APAC_output,path,CVA_APAC)
 	
-		cva_CORE_output="CVA Venue Open Defects CVA CORE (Total "+str(len(CVA_CORE))+").csv"
+		cva_CORE_output="04 CVA Venue Open Defects CVA CORE (Total "+str(len(CVA_CORE))+").csv"
 	
 		self.Write_CSV_File(cva_CORE_output,path,CVA_CORE)
 	
-		cva_VENUE_COMMON_output="CVA Venue Open Defects VENUE COMMON (Total "+str(len(CVA_VENUE_COMMON))+").csv"
+		cva_VENUE_COMMON_output="05 CVA Venue Open Defects VENUE COMMON (Total "+str(len(CVA_VENUE_COMMON))+").csv"
 	
 		self.Write_CSV_File(cva_VENUE_COMMON_output,path,CVA_VENUE_COMMON)
 	
@@ -167,27 +168,27 @@ class Daily_Defect_Report():
 			else:
 				CVA_VENUE_ENHAN.append(e)
 	
-		va_CORE_ENHAN_output="CVA Core Open Enhancements (Total "+str(len(CVA_CORE_ENHAN))+").csv"
+		va_CORE_ENHAN_output="06 CVA Core Open Enhancements (Total "+str(len(CVA_CORE_ENHAN))+").csv"
 	
 		self.Write_CSV_File(va_CORE_ENHAN_output,path,CVA_CORE_ENHAN)
 	
-		cva_VENUE_ENHAN_output="CVA Venue Open Enhancements (Total "+str(len(CVA_VENUE_ENHAN))+").csv"
+		cva_VENUE_ENHAN_output="07 CVA Venue Open Enhancements (Total "+str(len(CVA_VENUE_ENHAN))+").csv"
 	
 		self.Write_CSV_File(cva_VENUE_ENHAN_output,path,CVA_VENUE_ENHAN)
 	
 		#Generate .csv file for CVG
-		cvg_DEFECTS_output="CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
+		cvg_DEFECTS_output="08 CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
 		self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)
 	
-		cvg_ENHAN_output="CVG Open Enhancements (Total " + str(len(cvg_enhancements))+").csv"
+		cvg_ENHAN_output="09 CVG Open Enhancements (Total " + str(len(cvg_enhancements))+").csv"
 		self.Write_CSV_File(cvg_ENHAN_output,path,cvg_enhancements)
 	
 		#Generate .csv file for VA-CHE
-		va_che_output="VA-CHE NTSR CHE-CD Open Defects Enhancements (Total " + str(len(va_che))+").csv"
+		va_che_output="10 VA-CHE NTSR CHE-CD Open Defects Enhancements (Total " + str(len(va_che))+").csv"
 		self.Write_CSV_File(va_che_output,path,va_che)
 	
 		#Generate .csv file for SCW
-		scw_output="SCW Open Defects Enhancements (Total " + str(len(scw))+").csv"
+		scw_output="11 SCW Open Defects Enhancements (Total " + str(len(scw))+").csv"
 		self.Write_CSV_File(scw_output,path,scw)
 	
 	def Gen_Delta_Defect_Lists(self,path):
@@ -206,27 +207,27 @@ class Daily_Defect_Report():
 		scw=self.Filter_All_Open(scw_file)
 	
 		if len(cva_defects)>0:
-			cva_DEFECTS_output="New Open CVA Defects.csv"
+			cva_DEFECTS_output="01 New Open CVA Defects.csv"
 			self.Write_CSV_File(cva_DEFECTS_output,path,cva_defects)
 
 		if len(cva_enhancements)>0:
-			cva_ENHAN_output="New Open CVA Enhancements.csv"
+			cva_ENHAN_output="02 New Open CVA Enhancements.csv"
 			self.Write_CSV_File(cva_ENHAN_output,path,cva_enhancements)
 		
 		if len(cvg_defects)>0:
-			cvg_DEFECTS_output="New Open CVG Defects.csv"
+			cvg_DEFECTS_output="03 New Open CVG Defects.csv"
 			self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)
 		
 		if len(cvg_enhancements)>0:
-			cvg_ENHAN_output="New Open CVG Enhancements.csv"
+			cvg_ENHAN_output="04 New Open CVG Enhancements.csv"
 			self.Write_CSV_File(cvg_ENHAN_output,path,cvg_enhancements)
 		
 		if len(va_che)>0:
-			va_che_output="New Open VA-CHE Defects Enhancements.csv"
-			self.Write_CSV_File(va_che_output,path,va_che)	
+			va_che_output="05 New Open VA-CHE Defects Enhancements.csv"
+			self.Write_CSV_File(va_che_output,path,va_che)  
 	
 		if len(scw)>0:
-			scw_output="New Open SCW Defects Enhancements.csv"
+			scw_output="06 New Open SCW Defects Enhancements.csv"
 			self.Write_CSV_File(scw_output,path,scw)
 		
 	
@@ -250,7 +251,7 @@ class Daily_Defect_Report():
 		current=time.time()
 		today=time.gmtime(current)
 	
-		#generate the TT query date range	
+		#generate the TT query date range   
 		if today[6]!=0:
 			yesterday=time.gmtime(current-86400)
 			StartDate=str(yesterday[0])+'-'+str(yesterday[1])+'-'+str(yesterday[2])+' 1:00AM'
@@ -276,3 +277,39 @@ class Daily_Defect_Report():
 			self.Gen_Full_Defect_Lists(output_path)
 		else:
 			self.Gen_Delta_Defect_Lists(output_path)
+
+class _UT(unittest.TestCase):
+	"""docstring for _UT"""
+	def testOne(self):
+		r = Daily_Defect_Report()
+		cur_path=os.getcwd()
+	
+		Files=('CVA_ALL','CVG_ALL','VA_CHE_ALL','SCW')
+		Components={'CVA_ALL':'Elektron_CVA','CVG_ALL':'IDN_CVG','VA_CHE_ALL':'CHE-DJT,CHE-NFI,CHE-NTT,CHE-VAP,CHE-NTS,CHE-PHO,CHE-COX,CHE-CD,VA-CHE-CVG,VA-CHE-Elektron,CHE-GW1','SCW':'STATE CONTROL WATCHDOG'}
+		Component_Types={'CVA_ALL':'Product','CVG_ALL':'Product','VA_CHE_ALL':'Component','SCW':'Component'}
+	
+		StartDate=''
+		EndDate=''
+		current=time.time()
+		today=time.gmtime(current)
+
+		StartDate='2010-01-01 1:00AM'
+		EndDate=EndDate=str(today[0])+'-'+str(today[1])+'-'+str(today[2])+' 1:00AM'
+
+		#create output path
+		output_path=cur_path+"\\raw data\\"
+	
+		if not os.path.exists(output_path):
+			os.mkdir(output_path)
+		today_folder=output_path+str(today[0])+str(today[1])+str(today[2])+"\\"
+	
+		#delete the existing files under output_path
+		r.removeFileInDir(output_path)
+	
+		#Store the TT query results to xml files
+		r.Gen_XML_Files(Files,output_path,Components,Component_Types,StartDate,EndDate)
+
+		r.Gen_Full_Defect_Lists(output_path)
+
+if __name__ == "__main_":
+	unittest.main()

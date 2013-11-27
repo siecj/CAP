@@ -38,7 +38,7 @@ class CAP_DailyDefectReport():
         return tplHtml.substitute(contentoftable=mailHtml)
 
     def genTableHtml(self, srcFile):
-        caption = os.path.splitext(os.path.split(srcFile)[1])[0]
+        caption = os.path.splitext(os.path.split(srcFile)[1])[0][3:]
         ifile  = open(srcFile, "rb")
         reader = csv.reader(ifile)
 
@@ -65,14 +65,16 @@ class CAP_DailyDefectReport():
         title = "Open Defect"
         to=['jiu.chen@thomsonreuters.com', 'zhe.wang@thomsonreuters.com', 'shan.liu@thomsonreuters.com']
         # to=['jiu.chen@thomsonreuters.com']
-        send_mail('hongfeng.yao@thomsonreuters.com',to, title, message)
+        send_mail('CAP_TEAM@thomsonreuters.com',to, title, message)
 
 
 class _UT(unittest.TestCase):
     """docstring for ClassName"""
     def testOne(self):
         obj = CAP_DailyDefectReport()
-        obj.run()
+        r = obj.genMailHtml()
+        print r
 
 if __name__ == "__main__":
-    unittest.main()
+    obj = CAP_DailyDefectReport()
+    obj.run()
