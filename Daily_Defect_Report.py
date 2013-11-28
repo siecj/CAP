@@ -1,5 +1,6 @@
 from suds.client import Client
 from xml.etree import ElementTree as ET
+from jira.client import JIRA
 import time
 import re
 import csv
@@ -36,7 +37,11 @@ class Daily_Defect_Report():
 		result=result.replace("</NewDataSet></Result><Msg></Msg></Request_Info></TT_Msg>","")
 		return result
 
-
+	def Get_JIRA_Defects(self,server,auth,jsl):
+		jira=JIRA(server,auth)
+		issues=jira.search_issues(jsl,maxResults=2000,fields='key,summary,assignee,reporter,status,created,components')
+		return issues
+		
 	def Gen_XML_Files(self,Files,path,Components,Components_Types,StartDate,EndDate):
 		FieldList="'ISSUEID','TITLE','COMPONENT_SR','SUBMITTER','DEVELOPER','OWNER','STATE','SEVERITY','SUBMITDATE','BUSINESS_PRIORITY','ISSUETYPE'"
 		for file in Files:
@@ -104,12 +109,33 @@ class Daily_Defect_Report():
 		output.close()
 		print "Finished\n"
 
+	def Write_CSV_File_For_JIRA(self,file,path,list):
+		name=path+file
+		output=open(name,'wb')
+		writer=csv.writer(output)
+	
+		header=["Key","Summary","Component","Reporter","Assignee","Status","Sevenity","Created"]
+	
+		print "Start writing " + name
+		writer.writerow(header)
+	
+		for x in list:
+			row=[x.key, x.fields().summary, x.fields().components, x.fields().reporter, x.fields().assignee, x.fields().status, x.fields().created]	
+			writer.writerow(row)
+		
+		output.close()
+		print "Finished\n"
+	
 	def Gen_Full_Defect_Lists(self,path):
 		cva_file=path+"CVA_ALL.xml"
 		cvg_file=path+"CVG_ALL.xml"
 		va_che_file=path+"VA_CHE_ALL.xml"
 		scw_file=path+"SCW.xml"
-	
+		server={ 'server': 'http://jira.bjz.apac.ime.reuters.com'}
+		auth=('zhe.wang','welcome')
+		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate > startOfDay(-1y) AND createdDate <= startOfDay() ORDER BY Created DESC"
+		cdmr_jsl="project ='CVA Venue Rules v2.0' AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate > startOfDay(-1y) AND createdDate <= startOfDay() ORDER BY Created DESC"
+		
 		#Lists of defects/enhancements for each products
 		(cva_defects,cva_enhancements)=self.Split_Defects_Enhancement(cva_file)
 	
@@ -118,7 +144,11 @@ class Daily_Defect_Report():
 		va_che=self.Filter_All_Open(va_che_file)
 	
 		scw=self.Filter_All_Open(scw_file)
-	
+		
+		cva_jira=self.Get_JIRA_Defects(server,auth,cva_jsl)
+		
+		cdmr_jira=self.Get_JIRA_Defects(server,auth,cdmr_jsl)
+		
 		#Generate .csv file for CVA defects by region
 		CVA_AMER=[]
 		CVA_EMEA=[]
@@ -138,6 +168,13 @@ class Daily_Defect_Report():
 			elif re.match("Venue_Common",d['COMPONENT_SR']):
 				CVA_VENUE_COMMON.append(d)
 	
+		#Reverse the defect list, newest on top
+		CVA_AMER.reverse()
+		CVA_EMEA.reverse()
+		CVA_APAC.reverse()
+		CVA_CORE.reverse()
+		CVA_VENUE_COMMON.reverse()
+		
 		cva_AMER_output="01 CVA Venue Open Defects Region AMER (Total "+str(len(CVA_AMER))+").csv"
 	
 		self.Write_CSV_File(cva_AMER_output,path,CVA_AMER)
@@ -157,7 +194,11 @@ class Daily_Defect_Report():
 		cva_VENUE_COMMON_output="05 CVA Open Defects VENUE COMMON (Total "+str(len(CVA_VENUE_COMMON))+").csv"
 	
 		self.Write_CSV_File(cva_VENUE_COMMON_output,path,CVA_VENUE_COMMON)
+		
+		cva_jira_output="06 CVA Open Defects in JIRA (Total "+str(len(cva_jira))+").csv"
 	
+		self.Write_CSV_File_For_JIRA(cva_jira_output,path,cva_jira)
+		
 		#Generate .csv file for CVA enhancements by core or venue
 		CVA_CORE_ENHAN=[]
 		CVA_VENUE_ENHAN=[]
@@ -167,28 +208,39 @@ class Daily_Defect_Report():
 				CVA_CORE_ENHAN.append(e)
 			else:
 				CVA_VENUE_ENHAN.append(e)
-	
-		va_CORE_ENHAN_output="06 CVA Core Open Enhancements (Total "+str(len(CVA_CORE_ENHAN))+").csv"
+		
+		CVA_CORE_ENHAN.reverse()
+		CVA_VENUE_ENHAN.reverse()
+		
+		va_CORE_ENHAN_output="07 CVA Core Open Enhancements (Total "+str(len(CVA_CORE_ENHAN))+").csv"
 	
 		self.Write_CSV_File(va_CORE_ENHAN_output,path,CVA_CORE_ENHAN)
 	
-		cva_VENUE_ENHAN_output="07 CVA Venue Open Enhancements (Total "+str(len(CVA_VENUE_ENHAN))+").csv"
+		cva_VENUE_ENHAN_output="08 CVA Venue Open Enhancements (Total "+str(len(CVA_VENUE_ENHAN))+").csv"
 	
 		self.Write_CSV_File(cva_VENUE_ENHAN_output,path,CVA_VENUE_ENHAN)
 	
+		cvg_defects.reverse()
+		cvg_enhancements.reverse()
+		va_che.reverse()
+		scw.reverse()
+		
 		#Generate .csv file for CVG
-		cvg_DEFECTS_output="08 CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
+		cvg_DEFECTS_output="09 CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
 		self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)
 	
-		cvg_ENHAN_output="09 CVG Open Enhancements (Total " + str(len(cvg_enhancements))+").csv"
+		cvg_ENHAN_output="10 CVG Open Enhancements (Total " + str(len(cvg_enhancements))+").csv"
 		self.Write_CSV_File(cvg_ENHAN_output,path,cvg_enhancements)
 	
+		cdmr_jira_output="11 CDMR Open Defects in JIRA (Total "+str(len(cdmr_jira))+").csv"
+		self.Write_CSV_File_For_JIRA(cdmr_jira_output,path,cdmr_jira)
+		
 		#Generate .csv file for VA-CHE
-		va_che_output="10 VA-CHE NTSR CHE-CD Open Defects Enhancements (Total " + str(len(va_che))+").csv"
+		va_che_output="12 VA-CHE NTSR CHE-CD Open Defects Enhancements (Total " + str(len(va_che))+").csv"
 		self.Write_CSV_File(va_che_output,path,va_che)
 	
 		#Generate .csv file for SCW
-		scw_output="11 SCW Open Defects Enhancements (Total " + str(len(scw))+").csv"
+		scw_output="13 SCW Open Defects Enhancements (Total " + str(len(scw))+").csv"
 		self.Write_CSV_File(scw_output,path,scw)
 	
 	def Gen_Delta_Defect_Lists(self,path):
@@ -196,7 +248,12 @@ class Daily_Defect_Report():
 		cvg_file=path+"CVG_ALL.xml"
 		va_che_file=path+"VA_CHE_ALL.xml"
 		scw_file=path+"SCW.xml"
-	
+		server={ 'server': 'http://jira.bjz.apac.ime.reuters.com'}
+		auth=('zhe.wang','welcome')
+		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate > startOfDay(-1d) AND createdDate <= startOfDay() ORDER BY Created DESC"
+		cdmr_jsl="project ='CVA Venue Rules v2.0' AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate > startOfDay(-1d) AND createdDate <= startOfDay() ORDER BY Created DESC"
+		
+		
 		#Lists of defects/enhancements for each products
 		(cva_defects,cva_enhancements)=self.Split_Defects_Enhancement(cva_file)
 	
@@ -205,29 +262,45 @@ class Daily_Defect_Report():
 		va_che=self.Filter_All_Open(va_che_file)
 	
 		scw=self.Filter_All_Open(scw_file)
+		
+		cva_jira=self.Get_JIRA_Defects(server,auth,cva_jsl)
+		
+		cdmr_jira=self.Get_JIRA_Defects(server,auth,cdmr_jsl)
 	
 		if len(cva_defects)>0:
+			cva_defects.reverse()
 			cva_DEFECTS_output="01 New Open CVA Defects.csv"
 			self.Write_CSV_File(cva_DEFECTS_output,path,cva_defects)
 
 		if len(cva_enhancements)>0:
+			cva_enhancements.reverse()
 			cva_ENHAN_output="02 New Open CVA Enhancements.csv"
 			self.Write_CSV_File(cva_ENHAN_output,path,cva_enhancements)
-		
+		if len(cva_jira)>0:
+			cva_jira_output="03 New CVA Open Defects in JIRA.csv"
+			self.Write_CSV_File_For_JIRA(cva_jira_output,path,cva_jira)
+			
 		if len(cvg_defects)>0:
-			cvg_DEFECTS_output="03 New Open CVG Defects.csv"
+			cvg_defects.reverse()
+			cvg_DEFECTS_output="04 New Open CVG Defects.csv"
 			self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)
 		
 		if len(cvg_enhancements)>0:
-			cvg_ENHAN_output="04 New Open CVG Enhancements.csv"
+			cvg_enhancements.reverse()
+			cvg_ENHAN_output="05 New Open CVG Enhancements.csv"
 			self.Write_CSV_File(cvg_ENHAN_output,path,cvg_enhancements)
-		
+		if len(cdmr_jira)>0:
+			cdmr_jira_output="06 New CDMR Open Defects in JIRA.csv"
+			self.Write_CSV_File_For_JIRA(cdmr_jira_output,path,cdmr_jira)
+			
 		if len(va_che)>0:
-			va_che_output="05 New Open VA-CHE Defects Enhancements.csv"
+			va_che.reverse()
+			va_che_output="07 New Open VA-CHE Defects Enhancements.csv"
 			self.Write_CSV_File(va_che_output,path,va_che)  
 	
 		if len(scw)>0:
-			scw_output="06 New Open SCW Defects Enhancements.csv"
+			scw.reverse()
+			scw_output="08 New Open SCW Defects Enhancements.csv"
 			self.Write_CSV_File(scw_output,path,scw)
 		
 	
@@ -277,39 +350,3 @@ class Daily_Defect_Report():
 			self.Gen_Full_Defect_Lists(output_path)
 		else:
 			self.Gen_Delta_Defect_Lists(output_path)
-
-class _UT(unittest.TestCase):
-	"""docstring for _UT"""
-	def testOne(self):
-		r = Daily_Defect_Report()
-		cur_path=os.getcwd()
-	
-		Files=('CVA_ALL','CVG_ALL','VA_CHE_ALL','SCW')
-		Components={'CVA_ALL':'Elektron_CVA','CVG_ALL':'IDN_CVG','VA_CHE_ALL':'CHE-DJT,CHE-NFI,CHE-NTT,CHE-VAP,CHE-NTS,CHE-PHO,CHE-COX,CHE-CD,VA-CHE-CVG,VA-CHE-Elektron,CHE-GW1','SCW':'STATE CONTROL WATCHDOG'}
-		Component_Types={'CVA_ALL':'Product','CVG_ALL':'Product','VA_CHE_ALL':'Component','SCW':'Component'}
-	
-		StartDate=''
-		EndDate=''
-		current=time.time()
-		today=time.gmtime(current)
-
-		StartDate='2010-01-01 1:00AM'
-		EndDate=EndDate=str(today[0])+'-'+str(today[1])+'-'+str(today[2])+' 1:00AM'
-
-		#create output path
-		output_path=cur_path+"\\raw data\\"
-	
-		if not os.path.exists(output_path):
-			os.mkdir(output_path)
-		today_folder=output_path+str(today[0])+str(today[1])+str(today[2])+"\\"
-	
-		#delete the existing files under output_path
-		r.removeFileInDir(output_path)
-	
-		#Store the TT query results to xml files
-		r.Gen_XML_Files(Files,output_path,Components,Component_Types,StartDate,EndDate)
-
-		r.Gen_Full_Defect_Lists(output_path)
-
-if __name__ == "__main_":
-	unittest.main()
