@@ -114,13 +114,13 @@ class Daily_Defect_Report():
 		output=open(name,'wb')
 		writer=csv.writer(output)
 	
-		header=["Key","Summary","Component","Reporter","Assignee","Status","Sevenity","Created"]
+		header=["Key","Summary","Reporter","Assignee","Status","Created"]
 	
 		print "Start writing " + name
 		writer.writerow(header)
 	
 		for x in list:
-			row=[x.key, x.fields().summary, x.fields().components, x.fields().reporter, x.fields().assignee, x.fields().status, x.fields().created]	
+			row=[x.key, x.fields().summary, x.fields().reporter.name, x.fields().assignee.name, x.fields().status.name, x.fields().created]	
 			writer.writerow(row)
 		
 		output.close()
@@ -133,8 +133,8 @@ class Daily_Defect_Report():
 		scw_file=path+"SCW.xml"
 		server={ 'server': 'http://jira.bjz.apac.ime.reuters.com'}
 		auth=('zhe.wang','welcome')
-		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate > startOfDay(-1y) AND createdDate <= startOfDay() ORDER BY Created DESC"
-		cdmr_jsl="project ='CVA Venue Rules v2.0' AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate > startOfDay(-1y) AND createdDate <= startOfDay() ORDER BY Created DESC"
+		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
+		cdmr_jsl="project ='CVA Venue Rules v2.0' AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
 		
 		#Lists of defects/enhancements for each products
 		(cva_defects,cva_enhancements)=self.Split_Defects_Enhancement(cva_file)
@@ -250,8 +250,8 @@ class Daily_Defect_Report():
 		scw_file=path+"SCW.xml"
 		server={ 'server': 'http://jira.bjz.apac.ime.reuters.com'}
 		auth=('zhe.wang','welcome')
-		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate > startOfDay(-1d) AND createdDate <= startOfDay() ORDER BY Created DESC"
-		cdmr_jsl="project ='CVA Venue Rules v2.0' AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate > startOfDay(-1d) AND createdDate <= startOfDay() ORDER BY Created DESC"
+		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		cdmr_jsl="project ='CVA Venue Rules v2.0' AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
 		
 		
 		#Lists of defects/enhancements for each products
