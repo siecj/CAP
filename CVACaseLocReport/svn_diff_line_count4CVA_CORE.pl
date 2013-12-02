@@ -100,5 +100,22 @@ my $td_test_aff=sprintf("%.3f",$td_add_num*1.0/$total_code_chg);
 print "CVATD Change:\nAdd:$td_add_num\nDel:$td_del_num\nTest Affinity:$td_test_aff\n";
 
 
-my $tot_test_aff=sprintf("%.3f",($ut_add_num+$td_add_num)*1.0/$total_code_chg);
-print "Total Test Affinity [(UT Add + CVATD Add)/Total Code Change]: $tot_test_aff\n"
+my $tot_test_aff=sprintf("%.2f",($ut_add_num+$td_add_num)*100.0/$total_code_chg);
+print "Total Test Affinity [(UT Add + CVATD Add)/Total Code Change]: $tot_test_aff%\n";
+
+
+#hongfeng.yao print variables into output file
+my $outputfile = "testAffinity.csv";
+if( -e $outputfile)
+{
+   die("failed to open file $outputfile\n") if not open(OUT1, ">>$outputfile");
+}
+else
+{
+   print "New $outputfile created\n";
+   die("failed to create file $outputfile\n") if not open(OUT1, ">>$outputfile");
+   printf (OUT1 "From;To;Add Code;Del Code;Add UT;Del UT;ADD TD;Del TD;TotalTest/Code;AddT/Code;Timestamp\n");
+}
+
+printf (OUT1 "$ARGV[0];$ARGV[1];$code_add_num;$code_del_num;$ut_add_num;$ut_del_num;$td_add_num;$td_del_num;$tot_test_aff%;".localtime()."\n");
+close(OUT1);
