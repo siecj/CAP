@@ -120,7 +120,10 @@ class Daily_Defect_Report():
 		writer.writerow(header)
 	
 		for x in list:
-			row=[x.key, x.fields().summary, x.fields().reporter.name, x.fields().assignee.name, x.fields().status.name, x.fields().created]	
+			if x.fields().assignee==None:
+				row=[x.key, x.fields().summary,x.fields().reporter.name,"Unassigned",x.fields().status.name,x.fields().created]	
+			else:
+				row=[x.key, x.fields().summary,x.fields().reporter.name,x.fields().assignee.name,x.fields().status.name,x.fields().created]
 			writer.writerow(row)
 		
 		output.close()
