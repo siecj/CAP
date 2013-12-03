@@ -89,7 +89,6 @@ class TagDetector:
     def get_the_two_tag(self):
         self.get_lastest_tag_list()
         if self.file_list == []:
-            print "shitt"
             return []
         hist_list = self.get_history_tag_list();
         index = self.__list_compare(self.file_list, hist_list)
@@ -100,24 +99,30 @@ class TagDetector:
             return self.file_list[index:index+2]
         
     def get_history_tag_list(self):
-        f = open("taglist.txt","rb")
-        hist_list = cPickle.load(f)
-        f.close()
+        hist_list = []
+        if os.path.exists("taglist.txt"):
+            f = open("taglist.txt","rb")
+            hist_list = cPickle.load(f)
+            f.close()
         return hist_list
     
     def save_history_tag_list(self):
         f = open("taglist.txt","wb")
         cPickle.dump(self.file_list,f)
         f.close()
-        pre=str(self.file_list)
+        ''' pre=str(self.file_list)
         pre=pre.replace("[","")
         pre=pre.replace("]","")+"\n"
-        ofile=open("tqglist.txt","wb")
+        ofile=open("taglist.txt","wb")
         ofile.write(pre.encode('cp1252'))
-        ofile.close()
+        ofile.close()'''
         
     def __list_compare(self,List1,List2):
+        if len(List2)==0:
+            return 0
         for i in range(0,len(List1)):
+            if i+1 >= len(List2):
+                break
             if List1[i]==List2[i]:
                 pass
             else:
