@@ -22,7 +22,7 @@ class CAP_CVACaseLocReport():
             return
         else:
             logging.debug("New Tag detected "+str(latest_two_tags))
-            subprocess.call(["perl", "svn_diff_line_count4CVA_CORE.pl",latest_two_tags[0], latest_two_tags[1]])
+            subprocess.call(["perl", "svn_diff_line_count4CVA_CORE.pl",latest_two_tags[1], latest_two_tags[0]])
 
 class _UT(unittest.TestCase):
     """unit test of CAP_TicketsReport"""
