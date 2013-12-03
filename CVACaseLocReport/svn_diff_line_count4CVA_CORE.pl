@@ -11,6 +11,8 @@
 die("usage:$0 <old_core_svn_tag> <new_core_svn_tag>") if @ARGV < 2;
 my $old_svn="https://sami.cdt.int.thomsonreuters.com/svn/collections_elektron/CVA/Tags/".$ARGV[0];
 my $new_svn="https://sami.cdt.int.thomsonreuters.com/svn/collections_elektron/CVA/Tags/".$ARGV[1];
+my $svn_user = "s.buildrobot.rtcl";
+my $svn_pass = "k$.gdAqr}@";
 
 print "Input Summary:\nOld:$old_svn\nNew:$new_svn\n\n";
 
@@ -20,7 +22,9 @@ my $difflog="difflog_$ARGV[0]_$ARGV[1].txt";
 print "Processing...";
 #print "svn diff $old_svn $new_svn > $difflog";
 unless(-e $difflog){
-    `svn diff $old_svn $new_svn > $difflog`;
+    print "svn diff --username s.buildrobot.rtcl --password k$.gdAqr}@ --old $old_svn --new $new_svn > $difflog \n";
+    #`svn diff --username s.buildrobot.rtcl --password k$.gdAqr}@ --old $old_svn --new $new_svn > $difflog`;
+    `python svn_diff.py $old_svn $new_svn  $difflog`;
     unless($? == 0){#fail
         die("svn diff fail, please check your input!");
     }
