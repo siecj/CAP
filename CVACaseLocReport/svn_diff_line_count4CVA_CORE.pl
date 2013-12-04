@@ -118,7 +118,7 @@ else
 {
    print "New $outputfile created\n";
    die("failed to create file $outputfile\n") if not open(OUT1, ">>$outputfile");
-   printf (OUT1 "From;To;Add Code;Del Code;Add UT;Del UT;ADD TD;Del TD;TotalTest/Code;AddT/Code;Timestamp\n");
+   printf (OUT1 "From;To;Add Code;Del Code;Add UT;Del UT;ADD TD;Del TD;TotalTest/Code;Timestamp\n");
 }
 
 printf (OUT1 "$ARGV[0];$ARGV[1];$code_add_num;$code_del_num;$ut_add_num;$ut_del_num;$td_add_num;$td_del_num;$tot_test_aff%;".localtime()."\n");
