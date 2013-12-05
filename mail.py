@@ -5,10 +5,9 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
 from email.utils import COMMASPACE,formatdate
 from email import encoders
-
-g_cap_mail="CAP@thomsonreuters.com"
 
 def send_mail(fro, to, subject, text, files=[]):
     #assert type(server) == dict 
@@ -18,7 +17,7 @@ def send_mail(fro, to, subject, text, files=[]):
     msg = MIMEMultipart('alternative')
     
     msg['Subject'] = subject
-    msg['From'] = 'CAP_team@thomsonreuters.com' # Your from name and email address
+    msg['From'] = 'CAP_TEAM@thomsonreuters.com' # Your from name and email address
     msg['To'] = ','.join(to)
     #print msg['To']
     msg['Date'] = formatdate(localtime=True)
@@ -52,12 +51,56 @@ def send_mail(fro, to, subject, text, files=[]):
         # A mandrill error occurred: <class 'mandrill.UnknownSubaccountError'> - No subaccount exists with the id 'customer-123'    
         raise
     '''
+
+def send_mail_ex(to, subject, content, fro='CAP_TEAM@thomsonreuters.com', cc=[], bcc=[], images=[], attaches=[]):
+    msgRoot = MIMEMultipart('related')
+    msgRoot['Subject'] = subject
+    msgRoot['From'] = fro # Your from name and email address
+    msgRoot['To'] = ','.join(to)
+    msgRoot['Cc'] = ','.join(cc)
+    msgRoot['Bcc'] = ','.join(bcc)
+
+    # Add image html into body
+    ind = 1
+    for img in images:
+        content += '<br/><br/><img src="cid:image' + str(ind) + '" />'
+        ind += 1
+
+    # Body
+    msgText = MIMEText(content, 'html', 'utf-8')
+    msgRoot.attach(msgText)
+
+    # Image in body
+    ind = 1
+    for img in images:
+        fp = open(img, 'rb')
+        msgImage = MIMEImage(fp.read())
+        fp.close()
+        msgImage.add_header('Content-ID', '<image'+str(ind)+'>')
+        msgRoot.attach(msgImage)
+        ind += 1
+
+    # Attachment
+    for f in attaches:
+        data = open(f, 'rb')
+        part = MIMEBase('application', 'octet-stream') #'octet-stream': binary data 
+        part.set_payload(data.read()) 
+        data.close()
+        encoders.encode_base64(part) 
+        part.add_header('Content-Disposition', 'attachment', filename=os.path.basename(f)) 
+        msgRoot.attach(part)
+
+    s = smtplib.SMTP('10.80.81.132', 25)
+    s.sendmail(fro, [to, ','.join(cc), ','.join(bcc)], msgRoot.as_string())
+    s.quit()
+
     
 if __name__ == "__main__":
-    fro = 'chao.xie@thomsonreuters.com'
-    to1 = ['chao.xie@thomsonreuters.com','yingjie.liu@thomsonreuters.com','liang.zhang1@thomsonreuters.com']#"chao.xie@thomsonreuters.com", "yingjie.liu@thomsonreuters.com", "liang.zhang1@thomsonreuters.com"]
-    to = ['chao.xie@thomsonreuters.com']
-    subject = "Python email test"
-    text = '<b>HTML content</b><br><a href="http://www.baidu.com">baidu</a>'
-    files = ['C:\Users\u0147926\Pictures\DATA_ART_Wallpaper_WallPaper_12_1680x1050.jpg', 'E:\work\CAP\CAP\publish.py']
-    send_mail(fro, to, subject, text, files)
+    # cc = ['jiu.chen@thomsonreuters.com', 'liang.zhang1@thomsonreuters.com']
+    to = ['jiu.chen@thomsonreuters.com']
+    subject = "Python Email with Pictures"
+    text1 = '<b>HTML content</b><br><a href="http://www.baidu.com">baidu</a><br>'
+    att = ['tickets-per-region.png']
+    images = ['total-tickets.png', 'tickets-per-system.png']
+    # send_mail(fro, to, subject, text, files)
+    send_mail_ex(to, subject, text1, images=images, attaches=att)
