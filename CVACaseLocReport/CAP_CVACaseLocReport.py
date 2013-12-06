@@ -31,10 +31,10 @@ class CAP_CVACaseLocReport():
 
             self.genPlot()
 
-            # attachmentList = ['CORE.png']
-            # title = "CVA CORE Test Affinity"
-            # to=['jiu.chen@thomsonreuters.com', 'hongfeng.yao@thomsonreuters.com']
-            # send_mail('hongfeng.yao@thomsonreuters.com',to, title, "", attachmentList)
+            attachmentList = ['CORE.png']
+            title = "CVA CORE Test Affinity"
+            to=['jiu.chen@thomsonreuters.com', 'hongfeng.yao@thomsonreuters.com']
+            send_mail('hongfeng.yao@thomsonreuters.com',to, title, "", attachmentList)
 
 
     def genPlot(self):
