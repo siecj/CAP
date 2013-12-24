@@ -136,9 +136,9 @@ class Daily_Defect_Report():
 		scw_file=path+"SCW.xml"
 		server={ 'server': 'http://jira.bjz.apac.ime.reuters.com'}
 		auth=('zhe.wang','welcome')
-		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
-		cdmr_jsl="project ='CVA Venue Common' AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
-		che_jsl="project in ('Generic(UPA) CHE') AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
+		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
+		cdmr_jsl="project ='CVA Venue Common' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
+		che_jsl="project in ('Generic(UPA) CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
 		#Lists of defects/enhancements for each products
 		(cva_defects,cva_enhancements)=self.Split_Defects_Enhancement(cva_file)
 	
@@ -258,9 +258,9 @@ class Daily_Defect_Report():
 		scw_file=path+"SCW.xml"
 		server={ 'server': 'http://jira.bjz.apac.ime.reuters.com'}
 		auth=('zhe.wang','welcome')
-		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
-		cdmr_jsl="project ='CVA Venue Common' AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
-		che_jsl="project in ('Generic(UPA) CHE') AND issuetype in (Bug) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		cdmr_jsl="project ='CVA Venue Common' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		che_jsl="project in ('Generic(UPA) CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
 		
 		#Lists of defects/enhancements for each products
 		(cva_defects,cva_enhancements)=self.Split_Defects_Enhancement(cva_file)
