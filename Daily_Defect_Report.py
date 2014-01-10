@@ -192,15 +192,15 @@ class Daily_Defect_Report():
 	
 		self.Write_CSV_File(cva_APAC_output,path,CVA_APAC)
 	
-		cva_CORE_output="04 CVA Open Defects CVA CORE (Total "+str(len(CVA_CORE))+").csv"
+		cva_CORE_output="04 CVA CORE Open Defects (Total "+str(len(CVA_CORE))+").csv"
 	
 		self.Write_CSV_File(cva_CORE_output,path,CVA_CORE)
 	
-		cva_VENUE_COMMON_output="05 CVA Open Defects VENUE COMMON (Total "+str(len(CVA_VENUE_COMMON))+").csv"
+		cva_VENUE_COMMON_output="05 CVA VENUE COMMON Open Defects (Total "+str(len(CVA_VENUE_COMMON))+").csv"
 	
 		self.Write_CSV_File(cva_VENUE_COMMON_output,path,CVA_VENUE_COMMON)
 		
-		cva_jira_output="06 CVA Open Defects in JIRA (Total "+str(len(cva_jira))+").csv"
+		cva_jira_output="06 CVA Open Defects or Enhancements in JIRA (Total "+str(len(cva_jira))+").csv"
 	
 		self.Write_CSV_File_For_JIRA(cva_jira_output,path,cva_jira)
 		
@@ -237,18 +237,18 @@ class Daily_Defect_Report():
 		cvg_ENHAN_output="10 CVG Open Enhancements (Total " + str(len(cvg_enhancements))+").csv"
 		self.Write_CSV_File(cvg_ENHAN_output,path,cvg_enhancements)
 	
-		cdmr_jira_output="11 CVA Venue Common Open Defects in JIRA (Total "+str(len(cdmr_jira))+").csv"
+		cdmr_jira_output="11 CVA Venue Common Open Defects or Enhancements in JIRA (Total "+str(len(cdmr_jira))+").csv"
 		self.Write_CSV_File_For_JIRA(cdmr_jira_output,path,cdmr_jira)
 		
 		#Generate .csv file for VA-CHE
-		va_che_output="12 VA-CHE NTSR CHE-CD Open Defects Enhancements (Total " + str(len(va_che))+").csv"
+		va_che_output="12 VA-CHE NTSR CHE-CD Open Defects or Enhancements (Total " + str(len(va_che))+").csv"
 		self.Write_CSV_File(va_che_output,path,va_che)
 
-		che_jira_output="13 CHE Open Defects in JIRA (Total "+str(len(che_jira))+").csv"
+		che_jira_output="13 CHE Open Defects or Enhancements in JIRA (Total "+str(len(che_jira))+").csv"
 		self.Write_CSV_File_For_JIRA(che_jira_output,path,che_jira)
 	
 		#Generate .csv file for SCW
-		scw_output="14 SCW Open Defects Enhancements (Total " + str(len(scw))+").csv"
+		scw_output="14 SCW Open Defects or Enhancements (Total " + str(len(scw))+").csv"
 		self.Write_CSV_File(scw_output,path,scw)
 	
 	def Gen_Delta_Defect_Lists(self,path):
@@ -287,7 +287,7 @@ class Daily_Defect_Report():
 			cva_ENHAN_output="02 New Open CVA Enhancements.csv"
 			self.Write_CSV_File(cva_ENHAN_output,path,cva_enhancements)
 		if len(cva_jira)>0:
-			cva_jira_output="03 New CVA Open Defects in JIRA.csv"
+			cva_jira_output="03 New CVA Open Defects or Enhancements in JIRA.csv"
 			self.Write_CSV_File_For_JIRA(cva_jira_output,path,cva_jira)
 			
 		if len(cvg_defects)>0:
@@ -300,21 +300,21 @@ class Daily_Defect_Report():
 			cvg_ENHAN_output="05 New Open CVG Enhancements.csv"
 			self.Write_CSV_File(cvg_ENHAN_output,path,cvg_enhancements)
 		if len(cdmr_jira)>0:
-			cdmr_jira_output="06 New CVA Venue Common Open Defects in JIRA.csv"
+			cdmr_jira_output="06 New CVA Venue Common Open Defects or Enhancements in JIRA.csv"
 			self.Write_CSV_File_For_JIRA(cdmr_jira_output,path,cdmr_jira)
 			
 		if len(va_che)>0:
 			va_che.reverse()
-			va_che_output="07 New Open VA-CHE Defects Enhancements.csv"
+			va_che_output="07 New Open VA-CHE Defects or Enhancements.csv"
 			self.Write_CSV_File(va_che_output,path,va_che) 
 
 		if len(che_jira)>0:
-			che_jira_output="08 New CHE Open Defects in JIRA.csv"
+			che_jira_output="08 New CHE Open Defects or Enhancements in JIRA.csv"
 			self.Write_CSV_File_For_JIRA(che_jira_output,path,che_jira)	
 	
 		if len(scw)>0:
 			scw.reverse()
-			scw_output="09 New Open SCW Defects Enhancements.csv"
+			scw_output="09 New Open SCW Defects or Enhancements.csv"
 			self.Write_CSV_File(scw_output,path,scw)
 		
 	
@@ -330,7 +330,7 @@ class Daily_Defect_Report():
 		cur_path=os.getcwd()
 	
 		Files=('CVA_ALL','CVG_ALL','VA_CHE_ALL','SCW')
-		Components={'CVA_ALL':'Elektron_CVA','CVG_ALL':'IDN_CVG','VA_CHE_ALL':'CHE-DJT,CHE-NFI,CHE-NTT,CHE-VAP,CHE-NTS,CHE-PHO,CHE-COX,CHE-CD,VA-CHE-CVG,VA-CHE-Elektron,CHE-GW1','SCW':'STATE CONTROL WATCHDOG'}
+		Components={'CVA_ALL':'Elektron_CVA','CVG_ALL':'IDN_CVG','VA_CHE_ALL':'CHE-DJT,CHE-NFI,CHE-NTT,CHE-VAP,CHE-NTS,CHE-PHO,CHE-COX,CHE-CD,VA-CHE-CVG,VA-CHE-Elektron,CHE-GW1,CHE-RTA','SCW':'STATE CONTROL WATCHDOG'}
 		Component_Types={'CVA_ALL':'Product','CVG_ALL':'Product','VA_CHE_ALL':'Component','SCW':'Component'}
 	
 		StartDate=''
