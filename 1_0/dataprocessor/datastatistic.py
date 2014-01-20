@@ -24,14 +24,33 @@ class DataStatistic():
         return result
 
     def group_source_by_week(self, dictlist, fidname):
-        pass
+        result = {}
+        for item in dictlist:
+            monthstr = item[fidname].strftime('%Y-%U')
+            if result.has_key(monthstr):
+                result[monthstr].append(item)
+            else:
+                result[monthstr] = [item]
+
+        return result
+
+    def group_source_by_datetime(self, dictlist, fidname, dateformat):
+        result = {}
+        for item in dictlist:
+            monthstr = item[fidname].strftime(dateformat)
+            if result.has_key(monthstr):
+                result[monthstr].append(item)
+            else:
+                result[monthstr] = [item]
+
+        return result
 
 class _UT(unittest.TestCase):
     """docstring for _UT"""
 
     def setUp(self):
         self.dictlist = []
-        f = open('temp\ticktes_before_3299.csv', 'r')
+        f = open('temp\\ticktes_before_3299.csv', 'r')
         reader = csv.DictReader(f, dialect='excel-tab')
         for row in reader:
             row['Created'] = datetime.strptime(row['Created'], '%Y-%m-%d %H:%M:%S')
@@ -43,8 +62,16 @@ class _UT(unittest.TestCase):
         stat = DataStatistic()
         result = stat.group_source_by_month(self.dictlist, 'Created')
         keylist = result.keys()
-        logging.debug(sorted(keylist)
+        logging.debug(sorted(keylist))
         self.assertEqual(42, len(result))
+
+    def test2(self):
+        stat = DataStatistic()
+        result = stat.group_source_by_datetime(self.dictlist, 'Created', '%Y-%U')
+        keylist = result.keys()
+        logging.debug(sorted(keylist))
+        self.assertEqual(178, len(result))
+
 
 if __name__ == '__main__':
     logging.basicConfig(level='DEBUG')
