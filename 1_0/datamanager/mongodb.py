@@ -36,9 +36,10 @@ class MongoDBHelper():
 
 class RawDataDBHelper():
     """docstring for RawDataDBHelper"""
-    # def __init__(self, arg):
-    #     super(RawDataDBHelper, self).__init__()
-    #     self.arg = arg
+    def __init__(self):
+        self.client = MongoClient('localhost', 27017)  #defautl host and port
+        self.db = self.client['cap']
+        
     def save_rawdata(self, key, dic):
         coll = self.db['rawdata']
         rawdata = {"key": key, "rawdata": dic }
@@ -67,7 +68,7 @@ class RawDataDBHelper():
         return coll.find({"key": key}).sort(field, order).limit(1)['rawdata']
 
     def remove_by_key(self, key):
-        self.db.rawdata.remove({'key': key}
+        self.db.rawdata.remove({'key': key})
 
     def save_document(self, doc):
         coll = self.db['rawdata']

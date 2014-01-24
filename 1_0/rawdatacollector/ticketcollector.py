@@ -11,13 +11,17 @@ socket.setdefaulttimeout(120)
 # import time
 from ConfigParser import ConfigParser
 
-from datamanager.mongodb import MongoDBHelper
+from datamanager.mongodb import *
 
 g_rt_username = 'jiu.chen'
 g_rt_password = 'password'
 
 class TicketCollector():
     """docstring for ClassName"""
+    def __init__(self):
+        self.cp = ConfigParser()
+        self.cp.read("rawdata.conf")
+
     def login(self):
         cookiejar = cookielib.CookieJar()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookiejar))
@@ -27,16 +31,12 @@ class TicketCollector():
         logging.debug("collectionscoresupport login done.")
 
     def fetch_after_id(self, ticketid=3299):
-        cp = ConfigParser()
-        cp.read("rawdata.conf")
-        url = cp.get("tickets", "tickets_url_after_id").format(ticketid)
+        url = self.cp.get("tickets", "tickets_url_after_id").format(ticketid)
         resp = self.m_opener.open(url)
         return resp.read()
 
     def fetch_by_id(self, ticketid):
-        cp = ConfigParser()
-        cp.read("rawdata.conf")
-        url = cp.get("tickets", "tickets_url_id").format(ticketid)
+        url = self.cp.get("tickets", "tickets_url_id").format(ticketid)
         resp = self.m_opener.open(url)
         return resp.read()
 
@@ -100,6 +100,10 @@ class TicketCollector():
         self.update_unresolved_ticket()
         self.update_delta_ticket()
 
+    def get_all_tickets(self):
+        db = RawDataDBHelper()
+        return db.search_all_by_key('TicketsReport')
+
 class _UT(unittest.TestCase):
     """docstring for _UT"""
 
@@ -113,7 +117,7 @@ class _UT(unittest.TestCase):
     def testTwo(self):
         col = TicketCollector()
         col.login()
-        col.fetch_by_id()
+        col.fetch_by_id(3265)
 
     def testThree(self):
         logging.basicConfig(level="DEBUG")
