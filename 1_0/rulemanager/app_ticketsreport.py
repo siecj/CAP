@@ -8,6 +8,7 @@ from rawdatacollector.ticketcollector import TicketCollector
 from datamanager.mongodb import RawDataDBHelper
 from dataprocessor.datafiltration import DataFiltration
 from reportpublisher.mail import *
+from reportgenerator.chartgenerator import ChartGenerator
 
 import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
@@ -48,12 +49,25 @@ class TicketsReport():
         # call perl script
         self.call_old_scripts()
 
+        # refactor tickets-per-system plot
+        monthdata = self.load_all_hist_graph_month_csv()
+        chartgen = ChartGenerator()
         logging.debug("draw tickets-per-system plot")
-        self.genSystemPlot()
+        chartgen.draw_bar_plot(monthdata, 'Tickets Per System', 'Month', 'CreateGQS', 'CreateLegacy', 'CreateSDD', 0, 121, 'GQS', 'RAQ/DCMLS/TQS', 'SDD', "tickets-per-system.png", x_interval=2)
         logging.debug("draw tickets-per-region plot")
-        self.genRegionPlot()
+        chartgen.draw_bar_plot(monthdata, 'Tickets Per Region', 'Month', 'CreateEMEA', 'CreateAMERS', 'CreateAPAC', 0, 121, 'EMEA', 'AMERS', 'APAC', "tickets-per-region.png", x_interval=2)
+
+        alldata = self.load_all_hist_graph_csv()
         logging.debug("draw tickets overview plot")
-        self.genTicketsOverviewPlot()
+        chartgen.draw_point_plot(alldata, 'Total Tickets Overview', 'Date', 'CreateTotal', 'CloseTotal', 2500, 4000, 'Create Total', 'Close Total', 'total-tickets-1.png', x_interval=8)
+
+
+        # logging.debug("draw tickets-per-system plot")
+        # self.genSystemPlot()
+        # logging.debug("draw tickets-per-region plot")
+        # self.genRegionPlot()
+        # logging.debug("draw tickets overview plot")
+        # self.genTicketsOverviewPlot()
 
         strDate = startdate.strftime("%Y-%m-%d")
         reportAllFilename = "WeeklySummary_" + strDate + "_ALL.htm"
@@ -135,10 +149,10 @@ class TicketsReport():
         result = []
         for row in reader:
             if ind == 0:
+                ind = 1
                 continue
             else:
                 result.append(row)
-            ind += 1
         f.close()
         return result
 
