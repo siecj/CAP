@@ -45,6 +45,27 @@ class DataStatistic():
 
         return result
 
+    def stats_with_filter(self, datagroup, fidname, fidvalue):
+        result = []
+        keylist = datagroup.keys()
+        sortedkeylist = sorted(keylist)
+        for key in sortedkeylist:
+            datalist = datagroup[key]
+            counter = 0
+            for x in datalist:
+                if x[fidname] == fidvalue:
+                    counter += 1
+            result.append(counter)
+            logging.debug(key)
+        return result
+
+    def stats_group_data(self, datagroup):
+        result = []
+        sortedkeylist = sorted(datagroup.keys())
+        for key in sortedkeylist:
+            result.append(len(datagroup[key]))
+        return result
+
 class _UT(unittest.TestCase):
     """docstring for _UT"""
 
@@ -69,8 +90,22 @@ class _UT(unittest.TestCase):
         stat = DataStatistic()
         result = stat.group_source_by_datetime(self.dictlist, 'Created', '%Y-%U')
         keylist = result.keys()
-        logging.debug(sorted(keylist))
+        # logging.debug(sorted(keylist))
         self.assertEqual(178, len(result))
+
+    def test3(self):
+        stat = DataStatistic()
+        result1 = stat.group_source_by_datetime(self.dictlist, 'Created', '%Y-%m')
+        result2 = stat.stats_with_filter(result1, 'CF-Region', 'EMEA')
+        logging.debug(result2)
+
+    def test4(self):
+        stat = DataStatistic()
+        result1 = stat.group_source_by_datetime(self.dictlist, 'Created', '%Y-%m')
+        result2 = stat.stats_group_data(result1)
+        logging.debug(result2)
+        for x in range(len(result2)):
+            print sum(result2[0:x+1]) 
 
 
 if __name__ == '__main__':
