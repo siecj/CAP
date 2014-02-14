@@ -16,29 +16,20 @@ import numpy as np
 
 class TicketsReport():
     def run(self):
-        # get all tickets
-        # filter tickets to get internal data (responds.csv, all_hist.csv)
-        # adapter old sricpt to get dictlist for chart and report
-        # generate chart and report mail
-        # send mail
-
         # sync tickets against web site
-        # ticketColl = TicketCollector()
-        # ticketColl.run()
+        ticketcoll = TicketCollector()
+        ticketcoll.sync_with_website()
 
         # get all tickets
-        dbhelper = RawDataDBHelper()
-        alltickets = dbhelper.search_all_by_key('TicketsReport')
+        alltickets = ticketcoll.get_all_tickets()
 
         fil = DataFiltration()
 
         # get weekly tickets to generate responds.csv
         startdate = datetime.today() - timedelta(7)
-        logging.debug(startdate)
         respondsfidlist = ['id', 'Subject', 'CF-System Type', 'CF-Region', 'Status', 'Priority', 'Owner', 'Created', 'Resolved', 'LastUpdated', 'Queue', 'CF-Root Cause']
         weeklytickets = fil.filter_by_compare(alltickets, 'Created', startdate, 'GT', respondsfidlist)
         self.generate_responds_csv(weeklytickets, respondsfidlist, startdate)
-        logging.debug(len(weeklytickets))
 
         # generate all_hist.csv
         allhistfidlist = ['id', 'Created', 'Resolved', 'LastUpdated', 'Status', 'Queue', 'CF-System Type', 'CF-Region']
@@ -59,15 +50,7 @@ class TicketsReport():
 
         alldata = self.load_all_hist_graph_csv()
         logging.debug("draw tickets overview plot")
-        chartgen.draw_point_plot(alldata, 'Total Tickets Overview', 'Date', 'CreateTotal', 'CloseTotal', 2500, 4000, 'Create Total', 'Close Total', 'total-tickets-1.png', x_interval=8)
-
-
-        # logging.debug("draw tickets-per-system plot")
-        # self.genSystemPlot()
-        # logging.debug("draw tickets-per-region plot")
-        # self.genRegionPlot()
-        # logging.debug("draw tickets overview plot")
-        # self.genTicketsOverviewPlot()
+        chartgen.draw_point_plot(alldata, 'Total Tickets Overview', 'Date', 'CreateTotal', 'CloseTotal', 2500, 4000, 'Create Total', 'Close Total', 'total-tickets.png', x_interval=8)
 
         strDate = startdate.strftime("%Y-%m-%d")
         reportAllFilename = "WeeklySummary_" + strDate + "_ALL.htm"
@@ -78,9 +61,9 @@ class TicketsReport():
         logging.debug("send email")
         attachmentList = ['tickets-per-system.png', 'tickets-per-region.png', 'total-tickets.png']
         title = "CCT Weekly Report for Supporting Issues from "+strDate+" to "+date.today().strftime('%Y-%m-%d')
-        # to=['sheng.chen@thomsonreuters.com', 'stephen.li@thomsonreuters.com', 'jianping.zuo@thomsonreuters.com', 'cynthia.wang@thomsonreuters.com', 'hongfeng.yao@thomsonreuters.com', 'peter.zhu@thomsonreuters.com', 'jiu.chen@thomsonreuters.com', 'liang.zhang1@thomsonreuters.com', 'chao.xie@thomsonreuters.com']
-        to = ['jiu.chen@thomsonreuters.com']
-        send_mail('CAP@thomsonreuters.com',to, title, reportAllContent, attachmentList)
+        to = ['sheng.chen@thomsonreuters.com', 'stephen.li@thomsonreuters.com', 'jianping.zuo@thomsonreuters.com', 'cynthia.wang@thomsonreuters.com','peter.zhu@thomsonreuters.com']
+        cclist = ['jiu.chen@thomsonreuters.com', 'hongfeng.yao@thomsonreuters.com', 'liang.zhang1@thomsonreuters.com', 'chao.xie@thomsonreuters.com']
+        send_mail_ex(to, title, reportAllContent, images=attachmentList, cc=cclist)
 
         self.clear_temp_file()
 
@@ -170,113 +153,6 @@ class TicketsReport():
         os.remove('tickets-per-system.png')
         os.remove('total-tickets.png')
 
-    def autolabel(self, rects):
-        for rect in rects:
-            height = rect.get_height()
-            if (height < 3):
-                y = rect.get_y()-2
-            elif (height <= 9):
-                y = rect.get_y()
-            else:
-                y = 0.35*height + rect.get_y()
-            plt.text(rect.get_x()+rect.get_width()/2., y, '%d'%int(height), ha='center', va='bottom')
-
-    def drawBarPlot(self, x_ray, y_1, y_2, y_3, y_max, title, legend1, legend2, legend3, outputfile):
-        plt.cla()
-        ind = np.arange(len(x_ray))
-        width = 0.35
-
-        y_3_bottom = []
-        for i in range(len(y_1)):
-            y_3_bottom.append(y_1[i] + y_2[i])
-
-        p1 = plt.bar(ind, y_1, width, color='r')
-        p2 = plt.bar(ind, y_2, width, color='y', bottom=y_1)
-        p3 = plt.bar(ind, y_3, width, color='g', bottom=y_3_bottom)
-
-        self.autolabel(p1)
-        self.autolabel(p2)
-        self.autolabel(p3)
-
-        plt.title(title + '\n')
-        plt.xticks(ind+width/2., x_ray )
-        plt.yticks(np.arange(0,y_max,20))
-        plt.legend( (p1[0], p2[0], p3[0]), (legend1, legend2, legend3) )
-
-        plt.grid(True)
-        plt.savefig(outputfile)
-
-    def genSystemPlot(self):
-        """Tickets Per System"""
-        r = mlab.csv2rec('all_hist_graph_month.csv')
-        x_ray = []
-        y_GQS = []
-        y_RAQ = []
-        y_SDD = []
-        y_SDD_bottom = []
-
-        ind = np.arange(len(r))
-        for i in range(len(r))[1:]:
-            if i%2==0:
-                x_ray.append(r[i][0])
-            else:
-                x_ray.append("")
-            y_GQS.append(int(r[i][3]))
-            y_RAQ.append(int(r[i][5]))
-            y_SDD.append(int(r[i][7]))
-
-        self.drawBarPlot(x_ray, y_GQS, y_RAQ, y_SDD, 121, "Tickets Per System", 
-            'GQS', 'RAQ/DCMLS/TQS', 'SDD', "tickets-per-system.png")
-
-    def genRegionPlot(self):
-        """Tickets Per Region"""
-        r = mlab.csv2rec('all_hist_graph_month.csv')
-        x_ray = []
-        y_EMEA = []
-        y_AMERS = []
-        y_APAC = []
-
-        ind = np.arange(len(r))
-        for i in range(len(r))[1:]:
-            if i%2==0:
-                x_ray.append(r[i][0])
-            else:
-                x_ray.append("")
-            y_EMEA.append(int(r[i][11]))
-            y_AMERS.append(int(r[i][13]))
-            y_APAC.append(int(r[i][15]))
-
-        self.drawBarPlot(x_ray, y_EMEA, y_AMERS, y_APAC, 121, "Tickets Per Region", 
-            'EMEA', 'AMERS', 'APAC', "tickets-per-region.png")
-
-    def genTicketsOverviewPlot(self):
-        """"Total Tickets Overview"""
-        r = mlab.csv2rec('all_hist_graph.csv')
-        x_ray = []
-        y_create_total = []
-        y_close_total = []
-        ind = range(len(r))
-        for i in ind:
-            if i % 8 == 0:
-                x_ray.append(r[i][1].strftime('%m/%d/%y'))
-            else:
-                x_ray.append("")
-            y_create_total.append(r[i][10])
-            y_close_total.append(r[i][11])
-
-        plt.cla()
-        p1 = plt.plot(ind, y_create_total, 'bo-')
-        p2 = plt.plot(ind, y_close_total, 'ro-')
-        plt.axis([ind[0], ind[-1], 2500, 4000])
-        plt.xticks(ind, x_ray)
-
-        plt.title('Total Tickets Overview\n')
-        plt.legend( (p1[0], p2[0]), ('Create Total', 'Close Total'), loc=4 )
-        plt.grid(True, axis='y')
-        fig = plt.gcf()
-        fig.set_figwidth(13)
-        plt.savefig("total-tickets.png")
-
 
 class _UT(unittest.TestCase):
     """docstring for _UT"""
@@ -315,8 +191,8 @@ class _UT(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # logging.basicConfig(filename='cap.log', level='DEBUG')
-    logging.basicConfig(level='DEBUG')
+    logging.basicConfig(filename='cap.log', level='DEBUG')
+    # logging.basicConfig(level='DEBUG')
     # unittest.main()
     app = TicketsReport()
     app.run()

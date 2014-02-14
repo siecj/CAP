@@ -95,7 +95,7 @@ class TicketCollector():
             db.save_rawdata('TicketsReport', dic)
         logging.debug('get delta data finish')
 
-    def run(self):
+    def sync_with_website(self):
         self.login()
         self.update_unresolved_ticket()
         self.update_delta_ticket()
