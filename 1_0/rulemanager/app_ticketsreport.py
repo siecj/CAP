@@ -191,7 +191,7 @@ class _UT(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='cap.log', level='DEBUG')
+    logging.basicConfig(filename='cap.log', level='DEBUG', format='[%(asctime)s][%(levelname)s][%(module)s]-%(message)s')
     # logging.basicConfig(level='DEBUG')
     # unittest.main()
     app = TicketsReport()
