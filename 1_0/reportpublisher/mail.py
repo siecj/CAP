@@ -91,16 +91,16 @@ def send_mail_ex(to, subject, content, fro='CAP_TEAM@thomsonreuters.com', cc=[],
         msgRoot.attach(part)
 
     s = smtplib.SMTP('10.80.81.132', 25)
-    s.sendmail(fro, [to, ','.join(cc), ','.join(bcc)], msgRoot.as_string())
+    s.sendmail(fro, [','.join(to), ','.join(cc), ','.join(bcc)], msgRoot.as_string())
     s.quit()
 
     
 if __name__ == "__main__":
-    # cc = ['jiu.chen@thomsonreuters.com', 'liang.zhang1@thomsonreuters.com']
-    to = ['jiu.chen@thomsonreuters.com']
+    cclist = ['jiu.chen@thomsonreuters.com']
+    to = ['jiu.chen@thomsonreuters.com', 'hongfeng.yao@thomsonreuters.com']
     subject = "Python Email with Pictures"
     text1 = '<b>HTML content</b><br><a href="http://www.baidu.com">baidu</a><br>'
     att = ['tickets-per-region.png']
     images = ['total-tickets.png', 'tickets-per-system.png']
     # send_mail(fro, to, subject, text, files)
-    send_mail_ex(to, subject, text1, images=images, attaches=att)
+    send_mail_ex(to, subject, text1, images=images, cc=cclist)
