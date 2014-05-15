@@ -1,5 +1,6 @@
 import os
 import smtplib
+import logging
 #import mandrill
 
 from email.mime.multipart import MIMEMultipart
@@ -90,17 +91,24 @@ def send_mail_ex(to, subject, content, fro='CAP_TEAM@thomsonreuters.com', cc=[],
         part.add_header('Content-Disposition', 'attachment', filename=os.path.basename(f)) 
         msgRoot.attach(part)
 
+    # List for sendmail()
+    tolist = to + cc + bcc
+    logging.debug(tolist)
+
     s = smtplib.SMTP('10.80.81.132', 25)
-    s.sendmail(fro, [','.join(to), ','.join(cc), ','.join(bcc)], msgRoot.as_string())
+    s.sendmail(fro, tolist, msgRoot.as_string())
     s.quit()
 
     
 if __name__ == "__main__":
-    cclist = ['jiu.chen@thomsonreuters.com']
-    to = ['jiu.chen@thomsonreuters.com', 'hongfeng.yao@thomsonreuters.com']
-    subject = "Python Email with Pictures"
+    logging.basicConfig(level='DEBUG')
+    cclist = ['hongfeng.yao@thomsonreuters.com', 'peter.zhu@thomsonreuters.com', 'jiu.chen@thomsonreuters.com']
+    to = ['hongfeng.yao@thomsonreuters.com', 'jiu.chen@thomsonreuters.com']
+    subject = "Python Email with Pictures (TEST)"
     text1 = '<b>HTML content</b><br><a href="http://www.baidu.com">baidu</a><br>'
     att = ['tickets-per-region.png']
     images = ['total-tickets.png', 'tickets-per-system.png']
-    # send_mail(fro, to, subject, text, files)
-    send_mail_ex(to, subject, text1, images=images, cc=cclist)
+    # send_mail(fro, to, subject, text1, files)
+    logging.debug("Send mail start")
+    send_mail_ex(to, subject, text1, cc=cclist)
+    logging.debug("Send mail end")
