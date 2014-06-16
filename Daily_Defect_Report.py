@@ -121,201 +121,96 @@ class Daily_Defect_Report():
 	
 		for x in list:
 			if x.fields().assignee==None:
-				row=[x.key, x.fields().summary,x.fields().reporter.name,"Unassigned",x.fields().status.name,x.fields().created]	
+				row=[x.key, x.fields().summary.encode("utf-8"),x.fields().reporter.name,"Unassigned",x.fields().status.name,x.fields().created]	
 			else:
-				row=[x.key, x.fields().summary,x.fields().reporter.name,x.fields().assignee.name,x.fields().status.name,x.fields().created]
+				row=[x.key, x.fields().summary.encode("utf-8"),x.fields().reporter.name,x.fields().assignee.name,x.fields().status.name,x.fields().created]
+
 			writer.writerow(row)
 		
 		output.close()
 		print "Finished\n"
 	
 	def Gen_Full_Defect_Lists(self,path):
-		cva_file=path+"CVA_ALL.xml"
 		cvg_file=path+"CVG_ALL.xml"
-		va_che_file=path+"VA_CHE_ALL.xml"
-		scw_file=path+"SCW.xml"
-		server={ 'server': 'http://jira.bjz.apac.ime.reuters.com'}
-		auth=('zhe.wang','welcome')
-		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
-		cdmr_jsl="project ='CVA Venue Common' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
-		che_jsl="project in ('Generic(UPA) CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1y) AND createdDate < startOfDay() ORDER BY Created DESC"
+		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
+		auth=('zhe.wang','alreadyJIRA6!')
+		cva_core_jsl="component = 'CVA CORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review')"
+		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review')"
+		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
+		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review')"
+		
 		#Lists of defects/enhancements for each products
-		(cva_defects,cva_enhancements)=self.Split_Defects_Enhancement(cva_file)
+		cvg_defects=self.Filter_All_Open(cvg_file)
 	
-		(cvg_defects,cvg_enhancements)=self.Split_Defects_Enhancement(cvg_file)
-	
-		va_che=self.Filter_All_Open(va_che_file)
-	
-		scw=self.Filter_All_Open(scw_file)
-		
-		cva_jira=self.Get_JIRA_Defects(server,auth,cva_jsl)
-		
-		cdmr_jira=self.Get_JIRA_Defects(server,auth,cdmr_jsl)
+		cva_core_jira=self.Get_JIRA_Defects(server,auth,cva_core_jsl)
+
+		cva_venue_jira=self.Get_JIRA_Defects(server,auth,cva_venue_jsl)
 
 		che_jira=self.Get_JIRA_Defects(server,auth,che_jsl)
-		
-		#Generate .csv file for CVA defects by region
-		CVA_AMER=[]
-		CVA_EMEA=[]
-		CVA_APAC=[]
-		CVA_CORE=[]
-		CVA_VENUE_COMMON=[]
-	
-		for d in cva_defects:
-			if re.match("AMER",d['COMPONENT_SR']):
-				CVA_AMER.append(d)
-			elif re.match("EMEA",d['COMPONENT_SR']):
-				CVA_EMEA.append(d)
-			elif re.match("APAC",d['COMPONENT_SR']):
-				CVA_APAC.append(d)
-			elif re.match("CVA-Core",d['COMPONENT_SR']):
-				CVA_CORE.append(d)
-			elif re.match("Venue_Common",d['COMPONENT_SR']):
-				CVA_VENUE_COMMON.append(d)
-	
-		#Reverse the defect list, newest on top
-		CVA_AMER.reverse()
-		CVA_EMEA.reverse()
-		CVA_APAC.reverse()
-		CVA_CORE.reverse()
-		CVA_VENUE_COMMON.reverse()
-		
-		cva_AMER_output="01 CVA Venue Open Defects Region AMER (Total "+str(len(CVA_AMER))+").csv"
-	
-		self.Write_CSV_File(cva_AMER_output,path,CVA_AMER)
-	
-		cva_EMEA_output="02 CVA Venue Open Defects Region EMEA (Total "+str(len(CVA_EMEA))+").csv"
-	
-		self.Write_CSV_File(cva_EMEA_output,path,CVA_EMEA)
-	
-		cva_APAC_output="03 CVA Venue Open Defects Region APAC (Total "+str(len(CVA_APAC))+").csv"
-	
-		self.Write_CSV_File(cva_APAC_output,path,CVA_APAC)
-	
-		cva_CORE_output="04 CVA CORE Open Defects (Total "+str(len(CVA_CORE))+").csv"
-	
-		self.Write_CSV_File(cva_CORE_output,path,CVA_CORE)
-	
-		cva_VENUE_COMMON_output="05 CVA VENUE COMMON Open Defects (Total "+str(len(CVA_VENUE_COMMON))+").csv"
-	
-		self.Write_CSV_File(cva_VENUE_COMMON_output,path,CVA_VENUE_COMMON)
-		
-		cva_jira_output="06 CVA Open Defects or Enhancements in JIRA (Total "+str(len(cva_jira))+").csv"
-	
-		self.Write_CSV_File_For_JIRA(cva_jira_output,path,cva_jira)
-		
-		#Generate .csv file for CVA enhancements by core or venue
-		CVA_CORE_ENHAN=[]
-		CVA_VENUE_ENHAN=[]
-	
-		for e in cva_enhancements:
-			if re.match("CVA-Core",e['COMPONENT_SR']):
-				CVA_CORE_ENHAN.append(e)
-			else:
-				CVA_VENUE_ENHAN.append(e)
-		
-		CVA_CORE_ENHAN.reverse()
-		CVA_VENUE_ENHAN.reverse()
-		
-		va_CORE_ENHAN_output="07 CVA Core Open Enhancements (Total "+str(len(CVA_CORE_ENHAN))+").csv"
-	
-		self.Write_CSV_File(va_CORE_ENHAN_output,path,CVA_CORE_ENHAN)
-	
-		cva_VENUE_ENHAN_output="08 CVA Venue Open Enhancements (Total "+str(len(CVA_VENUE_ENHAN))+").csv"
-	
-		self.Write_CSV_File(cva_VENUE_ENHAN_output,path,CVA_VENUE_ENHAN)
-	
-		cvg_defects.reverse()
-		cvg_enhancements.reverse()
-		va_che.reverse()
-		scw.reverse()
-		
-		#Generate .csv file for CVG
-		cvg_DEFECTS_output="09 CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
-		self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)
-	
-		cvg_ENHAN_output="10 CVG Open Enhancements (Total " + str(len(cvg_enhancements))+").csv"
-		self.Write_CSV_File(cvg_ENHAN_output,path,cvg_enhancements)
-	
-		cdmr_jira_output="11 CVA Venue Common Open Defects or Enhancements in JIRA (Total "+str(len(cdmr_jira))+").csv"
-		self.Write_CSV_File_For_JIRA(cdmr_jira_output,path,cdmr_jira)
-		
-		#Generate .csv file for VA-CHE
-		va_che_output="12 VA-CHE NTSR CHE-CD Open Defects or Enhancements (Total " + str(len(va_che))+").csv"
-		self.Write_CSV_File(va_che_output,path,va_che)
 
-		che_jira_output="13 CHE Open Defects or Enhancements in JIRA (Total "+str(len(che_jira))+").csv"
+		scw_jira=self.Get_JIRA_Defects(server,auth,scw_jsl)
+		
+		#Generate .csv files
+
+		cva_core_jira_output="01 CVA CORE Open Defects or Enhancements in JIRA (Total "+str(len(cva_core_jira))+").csv"
+		self.Write_CSV_File_For_JIRA(cva_core_jira_output,path,cva_core_jira)
+
+		cva_venue_jira_output="02 CVA VENUE Open Defects or Enhancements in JIRA (Total "+str(len(cva_venue_jira))+").csv"
+		self.Write_CSV_File_For_JIRA(cva_venue_jira_output,path,cva_venue_jira)
+
+		che_jira_output="03 CHE Open Defects or Enhancements in JIRA (Total "+str(len(che_jira))+").csv"
 		self.Write_CSV_File_For_JIRA(che_jira_output,path,che_jira)
 	
-		#Generate .csv file for SCW
-		scw_output="14 SCW Open Defects or Enhancements (Total " + str(len(scw))+").csv"
-		self.Write_CSV_File(scw_output,path,scw)
+		scw_jira_output="05 SCW Open Defects or Enhancements in JIRA (Total "+str(len(scw_jira))+").csv"
+		self.Write_CSV_File_For_JIRA(scw_jira_output,path,scw_jira)
+	
+		cvg_defects.reverse()
+		
+		#Generate .csv file for CVG
+		cvg_DEFECTS_output="04 CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
+		self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)
+	
 	
 	def Gen_Delta_Defect_Lists(self,path):
-		cva_file=path+"CVA_ALL.xml"
 		cvg_file=path+"CVG_ALL.xml"
-		va_che_file=path+"VA_CHE_ALL.xml"
-		scw_file=path+"SCW.xml"
-		server={ 'server': 'http://jira.bjz.apac.ime.reuters.com'}
-		auth=('zhe.wang','welcome')
-		cva_jsl="project = CVACORE AND component = CVACORE AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
-		cdmr_jsl="project ='CVA Venue Common' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
-		che_jsl="project in ('Generic(UPA) CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
+		auth=('zhe.wang','alreadyJIRA6!')
+		cva_core_jsl="component = 'CVA CORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
 		
 		#Lists of defects/enhancements for each products
-		(cva_defects,cva_enhancements)=self.Split_Defects_Enhancement(cva_file)
 	
-		(cvg_defects,cvg_enhancements)=self.Split_Defects_Enhancement(cvg_file)
+		cvg_defects=self.Filter_All_Open(cvg_file)
 	
-		va_che=self.Filter_All_Open(va_che_file)
-	
-		scw=self.Filter_All_Open(scw_file)
-		
-		cva_jira=self.Get_JIRA_Defects(server,auth,cva_jsl)
-		
-		cdmr_jira=self.Get_JIRA_Defects(server,auth,cdmr_jsl)
+		cva_core_jira=self.Get_JIRA_Defects(server,auth,cva_core_jsl)
+
+		cva_venue_jira=self.Get_JIRA_Defects(server,auth,cva_venue_jsl)
 
 		che_jira=self.Get_JIRA_Defects(server,auth,che_jsl)
-	
-		if len(cva_defects)>0:
-			cva_defects.reverse()
-			cva_DEFECTS_output="01 New Open CVA Defects.csv"
-			self.Write_CSV_File(cva_DEFECTS_output,path,cva_defects)
 
-		if len(cva_enhancements)>0:
-			cva_enhancements.reverse()
-			cva_ENHAN_output="02 New Open CVA Enhancements.csv"
-			self.Write_CSV_File(cva_ENHAN_output,path,cva_enhancements)
-		if len(cva_jira)>0:
-			cva_jira_output="03 New CVA Open Defects or Enhancements in JIRA.csv"
-			self.Write_CSV_File_For_JIRA(cva_jira_output,path,cva_jira)
-			
-		if len(cvg_defects)>0:
-			cvg_defects.reverse()
-			cvg_DEFECTS_output="04 New Open CVG Defects.csv"
-			self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)
-		
-		if len(cvg_enhancements)>0:
-			cvg_enhancements.reverse()
-			cvg_ENHAN_output="05 New Open CVG Enhancements.csv"
-			self.Write_CSV_File(cvg_ENHAN_output,path,cvg_enhancements)
-		if len(cdmr_jira)>0:
-			cdmr_jira_output="06 New CVA Venue Common Open Defects or Enhancements in JIRA.csv"
-			self.Write_CSV_File_For_JIRA(cdmr_jira_output,path,cdmr_jira)
-			
-		if len(va_che)>0:
-			va_che.reverse()
-			va_che_output="07 New Open VA-CHE Defects or Enhancements.csv"
-			self.Write_CSV_File(va_che_output,path,va_che) 
+		scw_jira=self.Get_JIRA_Defects(server,auth,scw_jsl)
+	
+		if len(cva_core_jira)>0:
+			cva_core_jira_output="01 CVA CORE Open Defects or Enhancements in JIRA (Total "+str(len(cva_core_jira))+").csv"
+			self.Write_CSV_File_For_JIRA(cva_core_jira_output,path,cva_core_jira)
+
+		if len(cva_venue_jira)>0:
+			cva_venue_jira_output="02 CVA VENUE Open Defects or Enhancements in JIRA (Total "+str(len(cva_venue_jira))+").csv"
+			self.Write_CSV_File_For_JIRA(cva_venue_jira_output,path,cva_venue_jira)
 
 		if len(che_jira)>0:
-			che_jira_output="08 New CHE Open Defects or Enhancements in JIRA.csv"
-			self.Write_CSV_File_For_JIRA(che_jira_output,path,che_jira)	
-	
-		if len(scw)>0:
-			scw.reverse()
-			scw_output="09 New Open SCW Defects or Enhancements.csv"
-			self.Write_CSV_File(scw_output,path,scw)
+			che_jira_output="03 CHE Open Defects or Enhancements in JIRA (Total "+str(len(che_jira))+").csv"
+			self.Write_CSV_File_For_JIRA(che_jira_output,path,che_jira)
+
+		if len(scw_jira)>0:
+			scw_jira_output="05 SCW Open Defects or Enhancements in JIRA (Total "+str(len(scw_jira))+").csv"
+			self.Write_CSV_File_For_JIRA(scw_jira_output,path,scw_jira)
+
+		if len(cvg_defects)>0:
+			cvg_DEFECTS_output="04 CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
+			self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)	
 		
 	
 	def removeFileInDir(self,targetDir):
@@ -329,7 +224,8 @@ class Daily_Defect_Report():
 		#Variables Initialization
 		cur_path=os.getcwd()
 	
-		Files=('CVA_ALL','CVG_ALL','VA_CHE_ALL','SCW')
+		Files=[]
+		Files.append('CVG_ALL')
 		Components={'CVA_ALL':'Elektron_CVA','CVG_ALL':'IDN_CVG','VA_CHE_ALL':'CHE-DJT,CHE-NFI,CHE-NTT,CHE-VAP,CHE-NTS,CHE-PHO,CHE-COX,CHE-CD,VA-CHE-CVG,VA-CHE-Elektron,CHE-GW1,CHE-RTA','SCW':'STATE CONTROL WATCHDOG'}
 		Component_Types={'CVA_ALL':'Product','CVG_ALL':'Product','VA_CHE_ALL':'Component','SCW':'Component'}
 	
