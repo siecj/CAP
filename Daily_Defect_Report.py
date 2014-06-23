@@ -134,10 +134,10 @@ class Daily_Defect_Report():
 		cvg_file=path+"CVG_ALL.xml"
 		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
 		auth=('zhe.wang','alreadyJIRA6!')
-		cva_core_jsl="component = 'CVA CORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review')"
-		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review')"
+		cva_core_jsl="component = 'CVA CORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
+		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
 		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
-		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review')"
+		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
 		
 		#Lists of defects/enhancements for each products
 		cvg_defects=self.Filter_All_Open(cvg_file)
