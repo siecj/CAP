@@ -135,7 +135,9 @@ class Daily_Defect_Report():
 		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
 		auth=('zhe.wang','alreadyJIRA6!')
 		cva_core_jsl="component = 'CVA CORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
-		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
+		cva_venue_jsl_amer="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - Americas' ORDER BY created DESC"
+		cva_venue_jsl_emea="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - EMEA' ORDER BY created DESC"
+		cva_venue_jsl_asia="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - Asia' ORDER BY created DESC"
 		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
 		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
 		
@@ -144,7 +146,11 @@ class Daily_Defect_Report():
 	
 		cva_core_jira=self.Get_JIRA_Defects(server,auth,cva_core_jsl)
 
-		cva_venue_jira=self.Get_JIRA_Defects(server,auth,cva_venue_jsl)
+		cva_venue_amer=self.Get_JIRA_Defects(server,auth,cva_venue_jsl_amer)
+
+		cva_venue_emea=self.Get_JIRA_Defects(server,auth,cva_venue_jsl_emea)
+
+		cva_venue_asia=self.Get_JIRA_Defects(server,auth,cva_venue_jsl_asia)
 
 		che_jira=self.Get_JIRA_Defects(server,auth,che_jsl)
 
@@ -155,19 +161,25 @@ class Daily_Defect_Report():
 		cva_core_jira_output="01 CVA CORE Open Defects or Enhancements in JIRA (Total "+str(len(cva_core_jira))+").csv"
 		self.Write_CSV_File_For_JIRA(cva_core_jira_output,path,cva_core_jira)
 
-		cva_venue_jira_output="02 CVA VENUE Open Defects or Enhancements in JIRA (Total "+str(len(cva_venue_jira))+").csv"
-		self.Write_CSV_File_For_JIRA(cva_venue_jira_output,path,cva_venue_jira)
+		cva_venue_amer_output="02 CVA VENUE Open Defects or Enhancements Region AMER (Total "+str(len(cva_venue_amer))+").csv"
+		self.Write_CSV_File_For_JIRA(cva_venue_amer_output,path,cva_venue_amer)
 
-		che_jira_output="03 CHE Open Defects or Enhancements in JIRA (Total "+str(len(che_jira))+").csv"
+		cva_venue_emea_output="03 CVA VENUE Open Defects or Enhancements Region EMEA (Total "+str(len(cva_venue_emea))+").csv"
+		self.Write_CSV_File_For_JIRA(cva_venue_emea_output,path,cva_venue_emea)
+
+		cva_venue_asia_output="04 CVA VENUE Open Defects or Enhancements Region ASIA (Total "+str(len(cva_venue_asia))+").csv"
+		self.Write_CSV_File_For_JIRA(cva_venue_asia_output,path,cva_venue_asia)
+
+		che_jira_output="05 CHE Open Defects or Enhancements in JIRA (Total "+str(len(che_jira))+").csv"
 		self.Write_CSV_File_For_JIRA(che_jira_output,path,che_jira)
 	
-		scw_jira_output="05 SCW Open Defects or Enhancements in JIRA (Total "+str(len(scw_jira))+").csv"
+		scw_jira_output="06 SCW Open Defects or Enhancements in JIRA (Total "+str(len(scw_jira))+").csv"
 		self.Write_CSV_File_For_JIRA(scw_jira_output,path,scw_jira)
 	
 		cvg_defects.reverse()
 		
 		#Generate .csv file for CVG
-		cvg_DEFECTS_output="04 CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
+		cvg_DEFECTS_output="07 CVG Open Defects (Total " + str(len(cvg_defects))+").csv"
 		self.Write_CSV_File(cvg_DEFECTS_output,path,cvg_defects)
 	
 	
