@@ -134,7 +134,7 @@ class Daily_Defect_Report():
 		cvg_file=path+"CVG_ALL.xml"
 		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
 		auth=('zhe.wang','alreadyJIRA6!')
-		cva_core_jsl="component = 'CVA CORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
+		cva_core_jsl="component = 'CVACORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
 		cva_venue_jsl_amer="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - Americas' ORDER BY created DESC"
 		cva_venue_jsl_emea="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - EMEA' ORDER BY created DESC"
 		cva_venue_jsl_asia="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - Asia' ORDER BY created DESC"
@@ -187,7 +187,7 @@ class Daily_Defect_Report():
 		cvg_file=path+"CVG_ALL.xml"
 		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
 		auth=('zhe.wang','alreadyJIRA6!')
-		cva_core_jsl="component = 'CVA CORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
+		cva_core_jsl="component = 'CVACORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
 		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
 		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
 		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate < startOfDay() ORDER BY Created DESC"
