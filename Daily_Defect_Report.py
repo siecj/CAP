@@ -187,10 +187,10 @@ class Daily_Defect_Report():
 		cvg_file=path+"CVG_ALL.xml"
 		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
 		auth=('zhe.wang','alreadyJIRA6!')
-		cva_core_jsl="component = 'CVACORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate <= currentLogin() ORDER BY Created DESC"
-		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate <= currentLogin() ORDER BY Created DESC"
-		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate <= currentLogin() ORDER BY Created DESC"
-		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= startOfDay(-1d) AND createdDate <= currentLogin() ORDER BY Created DESC"
+		cva_core_jsl="component = 'CVACORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
+		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
+		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
+		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
 		
 		#Lists of defects/enhancements for each products
 	
@@ -241,6 +241,8 @@ class Daily_Defect_Report():
 		Components={'CVA_ALL':'Elektron_CVA','CVG_ALL':'IDN_CVG','VA_CHE_ALL':'CHE-DJT,CHE-NFI,CHE-NTT,CHE-VAP,CHE-NTS,CHE-PHO,CHE-COX,CHE-CD,VA-CHE-CVG,VA-CHE-Elektron,CHE-GW1,CHE-RTA','SCW':'STATE CONTROL WATCHDOG'}
 		Component_Types={'CVA_ALL':'Product','CVG_ALL':'Product','VA_CHE_ALL':'Component','SCW':'Component'}
 	
+		global StartDate
+		global EndDate
 		StartDate=''
 		EndDate=''
 		current=time.time()
@@ -249,12 +251,15 @@ class Daily_Defect_Report():
 		#generate the TT query date range   
 		if today[6]!=0:
 			yesterday=time.gmtime(current-86400)
-			StartDate=str(yesterday[0])+'-'+str(yesterday[1])+'-'+str(yesterday[2])+' 1:00AM'
-			EndDate=str(today[0])+'-'+str(today[1])+'-'+str(today[2])+' 1:00AM'
+			StartDate=str(yesterday[0])+'-'+str(yesterday[1])+'-'+str(yesterday[2])+' 01:00'
+			EndDate=str(today[0])+'-'+str(today[1])+'-'+str(today[2])+' 01:00'
 		else:
 			StartDate='2010-01-01 1:00AM'
-			EndDate=EndDate=str(today[0])+'-'+str(today[1])+'-'+str(today[2])+' 1:00AM'
+			EndDate=str(today[0])+'-'+str(today[1])+'-'+str(today[2])+' 01:00'
 		
+		print StartDate +"\n"
+
+		print EndDate +"\n"
 		#create output path
 		output_path=cur_path+"\\raw data\\"
 	
