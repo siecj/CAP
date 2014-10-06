@@ -133,7 +133,7 @@ class Daily_Defect_Report():
 	def Gen_Full_Defect_Lists(self,path):
 		cvg_file=path+"CVG_ALL.xml"
 		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
-		auth=('zhe.wang','alreadyJIRA6!')
+		auth=('zhe.wang','all2BJ6!')
 		cva_core_jsl="component = 'CVACORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
 		cva_venue_jsl_amer="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - Americas' ORDER BY created DESC"
 		cva_venue_jsl_emea="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - EMEA' ORDER BY created DESC"
@@ -186,7 +186,7 @@ class Daily_Defect_Report():
 	def Gen_Delta_Defect_Lists(self,path):
 		cvg_file=path+"CVG_ALL.xml"
 		server={ 'server': 'http://www.iajira.amers.ime.reuters.com'}
-		auth=('zhe.wang','alreadyJIRA6!')
+		auth=('zhe.wang','all2BJ6!')
 		cva_core_jsl="component = 'CVACORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
 		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
 		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
