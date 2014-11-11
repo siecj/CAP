@@ -144,9 +144,9 @@ class Daily_Defect_Report():
 		#Lists of defects/enhancements for each products
 		cvg_defects=self.Filter_All_Open(cvg_file)
 	
-		cva_core_jira=self.Get_JIRA_Defects(server,cva_core_jsl)
+		cva_core_jira=self.Get_JIRA_Defects(server,auth,cva_core_jsl)
 
-		cva_venue_amer=self.Get_JIRA_Defects(server,cva_venue_jsl_amer)
+		cva_venue_amer=self.Get_JIRA_Defects(server,auth,cva_venue_jsl_amer)
 
 		cva_venue_emea=self.Get_JIRA_Defects(server,auth,cva_venue_jsl_emea)
 
