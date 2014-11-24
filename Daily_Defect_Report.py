@@ -138,7 +138,7 @@ class Daily_Defect_Report():
 		cva_venue_jsl_amer="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - Americas' ORDER BY created DESC"
 		cva_venue_jsl_emea="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - EMEA' ORDER BY created DESC"
 		cva_venue_jsl_asia="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND category = 'Elektron Collections - Asia' ORDER BY created DESC"
-		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE','DelphX on Elektron ','ERT Silver Fix') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
+		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE','DelphX on Elektron ','ERT Silver Fix') AND component not in ('CVA','CVACORE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
 		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') ORDER BY created DESC"
 		
 		#Lists of defects/enhancements for each products
@@ -189,7 +189,7 @@ class Daily_Defect_Report():
 		auth=('zhe.wang','all2BJ6!')
 		cva_core_jsl="component = 'CVACORE' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
 		cva_venue_jsl="component = 'CVA' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
-		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE','DelphX on Elektron ','ERT Silver Fix') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
+		che_jsl="project in ('ERT VA-CHE','ERT CHE-CD','ERT NTS-R','ERT UPA-CHE','DelphX on Elektron ','ERT Silver Fix') AND component not in ('CVA','CVACORE') AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
 		scw_jsl="component = 'ERTSCW' AND issuetype in (Bug,Improvement) AND status in ('Open','In Progress','In Review') AND createdDate >= '%s' AND createdDate <= '%s' ORDER BY Created DESC" %(StartDate,EndDate)
 		
 		#Lists of defects/enhancements for each products
